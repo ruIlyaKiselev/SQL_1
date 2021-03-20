@@ -2,10 +2,10 @@ package DatabaseTools;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.util.*;
 
 public class SqlParser {
-    public static String parseSqlToString(String filename) throws FileNotFoundException {
+    public static List<String> parseSqlToString(String filename) throws FileNotFoundException {
         StringBuilder result = new StringBuilder();
         Scanner scanner = new Scanner(new File(filename));
 
@@ -13,6 +13,6 @@ public class SqlParser {
             result.append(scanner.nextLine());
         }
 
-        return result.toString();
+        return new ArrayList<>(Arrays.asList(result.toString().split(";")));
     }
 }

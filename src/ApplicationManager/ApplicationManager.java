@@ -4,6 +4,7 @@ import DatabaseTools.OracleConnection;
 import GUI.LoginWindow;
 import GUI.MainWindow;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 
 public class ApplicationManager {
@@ -31,8 +32,27 @@ public class ApplicationManager {
         mainWindow.setVisible(true);
     }
 
+    public void initDatabase() {
+        try {
+            oracleConnection.initDatabaseAndTestData();
+        } catch (SQLException throwables) {
+            System.err.println("SQL request error: " + throwables.getMessage());
+        } catch (FileNotFoundException e) {
+            System.err.println("Problem in parsing SQL file");
+        }
+    }
+
+    public void dropTables() {
+        try {
+            oracleConnection.dropTables();
+        } catch (FileNotFoundException e) {
+            System.err.println("Problem in parsing SQL file");
+        } catch (SQLException throwables) {
+            System.err.println("SQL request error: " + throwables.getMessage());
+        }
+    }
+
     public String getCountOfStrings() throws SQLException {
         return oracleConnection.showCountOfStrings();
     }
-
 }

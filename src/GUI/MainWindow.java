@@ -16,6 +16,8 @@ public class MainWindow extends JFrame {
     private ApplicationManager applicationManager;
 
     private JButton connectButton;
+    private JButton initButton;
+    private JButton dropButton;
     private JLabel countOfStringsLabel;
 
     private String countOfStrings = "0";
@@ -38,7 +40,19 @@ public class MainWindow extends JFrame {
         connectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         connectButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
         connectButton.setText("Click me");
-        connectButton.addActionListener(new ButtonEventListener());
+        connectButton.addActionListener(new CountButtonListener());
+
+        initButton = new JButton();
+        initButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        initButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
+        initButton.setText("Init database");
+        initButton.addActionListener(new InitButtonListener());
+
+        dropButton = new JButton();
+        dropButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        dropButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
+        dropButton.setText("Drop database");
+        dropButton.addActionListener(new DropButtonListener());
 
         countOfStringsLabel = new JLabel("Count of strings in a table: ?");
         countOfStringsLabel.setBorder(BorderFactory.createEmptyBorder(140, 0, 0, 0));
@@ -48,10 +62,12 @@ public class MainWindow extends JFrame {
 
         this.getContentPane().add(clickLabel);
         this.getContentPane().add(connectButton);
+        this.getContentPane().add(initButton);
+        this.getContentPane().add(dropButton);
         this.getContentPane().add(countOfStringsLabel);
     }
 
-    class ButtonEventListener implements ActionListener {
+    class CountButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             try {
                 countOfStrings = applicationManager.getCountOfStrings();
@@ -59,6 +75,18 @@ public class MainWindow extends JFrame {
             } catch (SQLException throwables) {
                 countOfStringsLabel.setText(throwables.getMessage());
             }
+        }
+    }
+
+    class InitButtonListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            applicationManager.initDatabase();
+        }
+    }
+
+    class DropButtonListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            applicationManager.dropTables();
         }
     }
 
