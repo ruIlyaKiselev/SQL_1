@@ -18,13 +18,14 @@ public class MainWindow extends JFrame {
     private JButton connectButton;
     private JButton initButton;
     private JButton dropButton;
+    private JButton manageDatabaseButton;
     private JLabel countOfStringsLabel;
 
     private String countOfStrings = "0";
 
     public MainWindow(ApplicationManager applicationManager) {
         super("Main window");
-        this.setSize(620, 480);
+        this.setSize(1024, 768);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setLayout(new BorderLayout());
@@ -54,6 +55,12 @@ public class MainWindow extends JFrame {
         dropButton.setText("Drop database");
         dropButton.addActionListener(new DropButtonListener());
 
+        manageDatabaseButton = new JButton();
+        manageDatabaseButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        manageDatabaseButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
+        manageDatabaseButton.setText("Manage database");
+        manageDatabaseButton.addActionListener(new ManageTableButton());
+
         countOfStringsLabel = new JLabel("Count of strings in a table: ?");
         countOfStringsLabel.setBorder(BorderFactory.createEmptyBorder(140, 0, 0, 0));
         countOfStringsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -64,6 +71,7 @@ public class MainWindow extends JFrame {
         this.getContentPane().add(connectButton);
         this.getContentPane().add(initButton);
         this.getContentPane().add(dropButton);
+        this.getContentPane().add(manageDatabaseButton);
         this.getContentPane().add(countOfStringsLabel);
     }
 
@@ -87,6 +95,12 @@ public class MainWindow extends JFrame {
     class DropButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             applicationManager.dropTables();
+        }
+    }
+
+    class ManageTableButton implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            applicationManager.showTableManageWindow();
         }
     }
 

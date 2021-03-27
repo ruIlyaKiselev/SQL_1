@@ -27,7 +27,7 @@ public class LoginWindow extends JFrame {
 
     public LoginWindow(ApplicationManager applicationManager) {
         super("Connecting to database");
-        this.setSize(620, 480);
+        this.setSize(1024, 768);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setLayout(new BorderLayout());
@@ -36,7 +36,7 @@ public class LoginWindow extends JFrame {
         this.applicationManager = applicationManager;
 
         JLabel connectionURLLabel = new JLabel("Connection URL:");
-        connectionURLLabel.setBorder(BorderFactory.createEmptyBorder(140, 0, 0, 0));
+        connectionURLLabel.setBorder(BorderFactory.createEmptyBorder(240, 0, 0, 0));
         connectionURLLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         connectionURLTextField = new JTextField(16);

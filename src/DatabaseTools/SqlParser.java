@@ -13,6 +13,6 @@ public class SqlParser {
             result.append(scanner.nextLine());
         }
 
-        return new ArrayList<>(Arrays.asList(result.toString().split(";")));
+        return new ArrayList<>(Arrays.asList(result.toString().split(";/")));
     }
 }

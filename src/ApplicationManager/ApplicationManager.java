@@ -3,15 +3,18 @@ package ApplicationManager;
 import DatabaseTools.OracleConnection;
 import GUI.LoginWindow;
 import GUI.MainWindow;
+import GUI.TableManageWindow;
 
+import javax.swing.table.DefaultTableModel;
 import java.io.FileNotFoundException;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class ApplicationManager {
     private OracleConnection oracleConnection;
 
     private LoginWindow loginWindow;
     private MainWindow mainWindow;
+    private TableManageWindow tableManageWindow;
 
     public ApplicationManager() {
         try {
@@ -22,6 +25,7 @@ public class ApplicationManager {
 
         loginWindow = new LoginWindow(this);
         mainWindow = new MainWindow(this);
+        tableManageWindow = new TableManageWindow(this);
 
         loginWindow.setVisible(true);
     }
@@ -30,6 +34,18 @@ public class ApplicationManager {
         oracleConnection.connectToDatabase(URL, login, password);
         loginWindow.setVisible(false);
         mainWindow.setVisible(true);
+    }
+
+    public void showTableManageWindow() {
+        tableManageWindow.loadDataToTable();
+        mainWindow.setVisible(false);
+        tableManageWindow.setVisible(true);
+    }
+
+    public void showMainWindow() {
+        mainWindow.setVisible(true);
+        tableManageWindow.setVisible(false);
+        loginWindow.setVisible(false);
     }
 
     public void initDatabase() {
@@ -55,4 +71,9 @@ public class ApplicationManager {
     public String getCountOfStrings() throws SQLException {
         return oracleConnection.showCountOfStrings();
     }
+
+    public DefaultTableModel getTableByName() throws SQLException {
+        return oracleConnection.getTableByName();
+    }
+
 }
