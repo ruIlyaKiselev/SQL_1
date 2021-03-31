@@ -2,12 +2,9 @@ package DatabaseTools;
 
 import oracle.jdbc.pool.OracleDataSource;
 
-import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.io.FileNotFoundException;
-import java.math.BigDecimal;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -21,18 +18,6 @@ public class OracleConnection {
 
     public OracleConnection() throws SQLException {
         ods = new OracleDataSource();
-    }
-
-    public String showCountOfStrings() throws SQLException {
-        String result = "";
-        PreparedStatement stmt = conn.prepareStatement("select count(*) from dba_users");
-        ResultSet rslt = stmt.executeQuery();
-
-        while (rslt.next()) {
-            result = rslt.getString(1);
-        }
-
-        return result;
     }
 
     public void connectToDatabase(String URL, String username, String password) throws SQLException {
@@ -62,19 +47,29 @@ public class OracleConnection {
         }
     }
 
-    public ResultSet getQueryFromDatabase(String query) throws SQLException {
+    public ResultSet executeQuery(String query) throws SQLException {
         Statement statement = conn.createStatement();
         return statement.executeQuery(query);
     }
 
-    public DefaultTableModel getTableByName() throws SQLException {
+    public DefaultTableModel getTableModelByQuery(String query) throws SQLException {
         Statement stmt = conn.createStatement();
-        ResultSet resultSet = stmt.executeQuery("select * from EMPLOYEES");
+        ResultSet resultSet = stmt.executeQuery(query);
 
         return buildTableModel(resultSet);
     }
 
-    public static DefaultTableModel buildTableModel(ResultSet rs) throws SQLException {
+    public void commit() throws SQLException {
+        Statement stmt = conn.createStatement();
+        stmt.executeQuery("commit");
+    }
+
+    public void rollback() throws SQLException {
+        Statement stmt = conn.createStatement();
+        stmt.executeQuery("rollback");
+    }
+
+    private static DefaultTableModel buildTableModel(ResultSet rs) throws SQLException {
 
         ResultSetMetaData metaData = rs.getMetaData();
         Vector<String> columnNames = new Vector<String>();
