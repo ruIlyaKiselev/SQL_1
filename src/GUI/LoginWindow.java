@@ -42,7 +42,9 @@ public class LoginWindow extends JFrame {
         connectionURLTextField = new JTextField(16);
         connectionURLTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
         connectionURLTextField.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
-        connectionURLTextField.setText("jdbc:oracle:thin:@//localhost:1521/XEPDB1");
+        connectionURLTextField.setText("jdbc:oracle:thin:@84.237.50.81:1521:xe");
+        // jdbc:oracle:thin:@84.237.50.81:1521:xe
+        // jdbc:oracle:thin:@//localhost:1521/XEPDB1
 
         JLabel loginLabel = new JLabel("Login:");
         loginLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
