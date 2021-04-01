@@ -1,14 +1,14 @@
 CREATE TABLE country (
-    country_id NUMBER(10) PRIMARY KEY,
+    country_id VARCHAR2(3) PRIMARY KEY,
     name VARCHAR2(10) NOT NULL
 );
 /
 CREATE TABLE abstract_provider (
     abstract_provider_id NUMBER(10) NOT NULL,
     category VARCHAR2(20) NOT NULL,
-    name VARCHAR2(20) NOT NULL,
-    address VARCHAR2(40) NOT NULL,
-    country_id NUMBER(10) NOT NULL,
+    name VARCHAR2(30) NOT NULL,
+    address VARCHAR2(50) NOT NULL,
+    country_id VARCHAR2(3) NOT NULL,
     FOREIGN KEY (country_id) REFERENCES country,
     CONSTRAINT abstract_provider_pk PRIMARY KEY (abstract_provider_id, category)
 );

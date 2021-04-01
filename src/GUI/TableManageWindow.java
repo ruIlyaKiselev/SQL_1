@@ -200,6 +200,8 @@ public class TableManageWindow extends JFrame {
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
+
+            updateTableModule();
         }
     }
 
@@ -218,6 +220,8 @@ public class TableManageWindow extends JFrame {
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
+
+            updateTableModule();
         }
     }
 
@@ -241,6 +245,8 @@ public class TableManageWindow extends JFrame {
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
+
+            updateTableModule();
         }
     }
 

@@ -52,14 +52,16 @@ public class LoginWindow extends JFrame {
         loginTextField = new JTextField(16);
         loginTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginTextField.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
+        loginTextField.setText("18209_Kiselev");
 
-        JLabel passwordLabel = new JLabel("Password:");
+        JLabel passwordLabel = new JLabel("Password: ");
         passwordLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         passwordTextField = new JPasswordField(16);
         passwordTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
         passwordTextField.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
         passwordTextField.setEchoChar('*');
+        passwordTextField.setText("1111");
 
         buttonLabel = new JLabel("~");
         buttonLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -92,6 +94,7 @@ public class LoginWindow extends JFrame {
                 applicationManager.login(connectionURL, username, password);
             } catch (SQLException throwables) {
                 buttonLabel.setText(throwables.getMessage());
+                System.err.println(throwables.getMessage());
             }
         }
     }

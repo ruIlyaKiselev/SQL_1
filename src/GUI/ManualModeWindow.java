@@ -8,7 +8,9 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Formatter;
 
 public class ManualModeWindow extends JFrame {
 
@@ -50,7 +52,7 @@ public class ManualModeWindow extends JFrame {
         buttonBack.addActionListener(new BackButtonActionListener());
 
         executeButton = new JButton("Execute");
-        //executeButton.addActionListener(new UpdateActionListener());
+        executeButton.addActionListener(new ExecuteButtonActionListener());
 
         queryField = new JTextField(50);
         queryField.setMaximumSize(new Dimension((this.getWidth() - 100), 20));
@@ -72,7 +74,6 @@ public class ManualModeWindow extends JFrame {
         contentPanel.add(consoleArea, BorderLayout.SOUTH);
     }
 
-
     class BackButtonActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -83,14 +84,33 @@ public class ManualModeWindow extends JFrame {
     class ExecuteButtonActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            ResultSet resultSet;
             try {
-                resultSet = applicationManager.executeQuery(queryField.getText());
+                ResultSet resultSet = applicationManager.executeQuery(queryField.getText());
+                ResultSetMetaData rsmd = resultSet.getMetaData();
+                int columnsNumber = rsmd.getColumnCount();
+                DBTablePrinter.printResultSet(resultSet);
+
+                for (int i = 1; i <= columnsNumber; i++) {
+                    if (i > 1) {
+                        consoleArea.append(" | ");
+                    }
+                    consoleArea.append(rsmd.getColumnName(i));
+                }
+                consoleArea.append("\n");
+
+                while (resultSet.next()) {
+                    for (int i = 1; i <= columnsNumber; i++) {
+                        if (i > 1) {
+                            consoleArea.append(" | ");
+                        }
+                        consoleArea.append(resultSet.getString(i));
+                    }
+                    consoleArea.append("\n");
+                }
+
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
-            //TODO: ...
         }
     }
-
 }

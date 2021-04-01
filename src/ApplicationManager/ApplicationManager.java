@@ -66,9 +66,15 @@ public class ApplicationManager {
 
     public void initDatabase() {
         try {
-            oracleConnection.initDatabaseAndTestData();
-        } catch (SQLException throwables) {
-            System.err.println("SQL request error: " + throwables.getMessage());
+            oracleConnection.loadSqlScript("src/DatabaseTools/SqlQueries/InitDatabase.sql");
+        } catch (FileNotFoundException e) {
+            System.err.println("Problem in parsing SQL file");
+        }
+    }
+
+    public void fillDatabase() {
+        try {
+            oracleConnection.loadSqlScript("src/DatabaseTools/SqlQueries/FillDatabase.sql");
         } catch (FileNotFoundException e) {
             System.err.println("Problem in parsing SQL file");
         }
@@ -76,11 +82,9 @@ public class ApplicationManager {
 
     public void dropTables() {
         try {
-            oracleConnection.dropTables();
+            oracleConnection.loadSqlScript("src/DatabaseTools/SqlQueries/DropDatabase.sql");
         } catch (FileNotFoundException e) {
             System.err.println("Problem in parsing SQL file");
-        } catch (SQLException throwables) {
-            System.err.println("SQL request error: " + throwables.getMessage());
         }
     }
 
@@ -170,6 +174,7 @@ public class ApplicationManager {
 
         //System.out.println(query);
         oracleConnection.executeQuery(query.toString());
+
     }
 
     public void oracleOverrideRow(String tableName, Vector<String> cols, Vector<String> oldValues,

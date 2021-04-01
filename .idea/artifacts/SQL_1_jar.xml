@@ -3,7 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/SQL_1_jar</output-path>
     <root id="archive" name="SQL_1.jar">
       <element id="module-output" name="SQL_1" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/../../../../ojdbc6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../../../ojdbc8.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

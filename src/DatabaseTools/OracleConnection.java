@@ -6,6 +6,7 @@ import javax.swing.table.DefaultTableModel;
 import java.io.FileNotFoundException;
 import java.sql.*;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 public class OracleConnection {
@@ -17,6 +18,7 @@ public class OracleConnection {
     private Connection conn;
 
     public OracleConnection() throws SQLException {
+        Locale.setDefault(Locale.ENGLISH);
         ods = new OracleDataSource();
     }
 
@@ -27,23 +29,15 @@ public class OracleConnection {
         conn = ods.getConnection();
     }
 
-    public void initDatabaseAndTestData() throws SQLException, FileNotFoundException {
-        List<String> sqlRequests = SqlParser.parseSqlToString("C:\\Users\\ruily_g40rtk5\\IdeaProjects\\SQL_1\\src\\DatabaseTools\\InitDatabase.sql");
+    public void loadSqlScript(String fileName) throws FileNotFoundException {
+        List<String> sqlRequests = SqlParser.parseSqlToString(fileName);
 
         for (String iter: sqlRequests) {
             //System.out.println(iter);
-            PreparedStatement stmt = conn.prepareStatement(iter);
-            ResultSet rslt = stmt.executeQuery();
-        }
-    }
-
-    public void dropTables() throws FileNotFoundException, SQLException {
-        List<String> sqlRequests = SqlParser.parseSqlToString("C:\\Users\\ruily_g40rtk5\\IdeaProjects\\SQL_1\\src\\DatabaseTools\\DropDatabase.sql");
-
-        for (String iter: sqlRequests) {
-            //System.out.println(iter);
-            PreparedStatement stmt = conn.prepareStatement(iter);
-            ResultSet rslt = stmt.executeQuery();
+            try {
+                PreparedStatement stmt = conn.prepareStatement(iter);
+                ResultSet rslt = stmt.executeQuery();
+            } catch (SQLException ignored) {}
         }
     }
 
