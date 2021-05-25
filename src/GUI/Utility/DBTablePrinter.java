@@ -24,7 +24,7 @@ for version control and publishing an open source software.
 Hami
  */
 
-package GUI;
+package GUI.Utility;
 
 import java.sql.*;
 import java.util.ArrayList;

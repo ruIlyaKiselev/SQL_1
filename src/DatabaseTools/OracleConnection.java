@@ -29,15 +29,22 @@ public class OracleConnection {
         conn = ods.getConnection();
     }
 
-    public void loadSqlScript(String fileName) throws FileNotFoundException {
-        List<String> sqlRequests = SqlParser.parseSqlToString(fileName);
+    public void disconnect() throws SQLException {
+        conn.close();
+    }
+
+    public void executeSqlScript(String sqlScript) throws FileNotFoundException {
+        List<String> sqlRequests = SqlParser.parseSqlToString(sqlScript);
 
         for (String iter: sqlRequests) {
-            //System.out.println(iter);
             try {
                 PreparedStatement stmt = conn.prepareStatement(iter);
                 ResultSet rslt = stmt.executeQuery();
-            } catch (SQLException ignored) {}
+                System.out.println(iter);
+            } catch (SQLException exception) {
+                System.err.println(iter);
+                System.err.println(exception.getMessage());
+            }
         }
     }
 

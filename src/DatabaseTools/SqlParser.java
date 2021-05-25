@@ -1,18 +1,32 @@
 package DatabaseTools;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SqlParser {
-    public static List<String> parseSqlToString(String filename) throws FileNotFoundException {
-        StringBuilder result = new StringBuilder();
-        Scanner scanner = new Scanner(new File(filename));
+    public static List<String> parseSqlToString(String sqlScript) {
+        return new ArrayList<>(Arrays.asList(sqlScript.split(";" + System.lineSeparator() + "/")));
+    }
 
-        while (scanner.hasNext()) {
-            result.append(scanner.nextLine());
-        }
+    public static String getSqlQueryFromFile(Class customClass, String filename) {
+        ClassLoader classLoader = customClass.getClassLoader();
+        InputStream inputStream = classLoader.getResourceAsStream(filename);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        String contents = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        System.out.println(contents);
+        return contents;
+    }
 
-        return new ArrayList<>(Arrays.asList(result.toString().split(";/")));
+    public static String getSqlQueryFromFile(String filename) {
+        InputStream inputStream = SqlParser.class.getResourceAsStream(filename);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        String contents = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        System.out.println(contents);
+        return contents;
     }
 }

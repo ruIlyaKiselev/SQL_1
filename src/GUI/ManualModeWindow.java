@@ -1,16 +1,15 @@
 package GUI;
 
 import ApplicationManager.ApplicationManager;
+import GUI.Utility.DBTablePrinter;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Formatter;
 
 public class ManualModeWindow extends JFrame {
 
@@ -77,7 +76,7 @@ public class ManualModeWindow extends JFrame {
     class BackButtonActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            applicationManager.showMainWindow();
+            applicationManager.showDatabaseManagementWindow();
         }
     }
 

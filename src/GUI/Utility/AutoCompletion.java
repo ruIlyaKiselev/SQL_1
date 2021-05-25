@@ -1,4 +1,4 @@
-package GUI;
+package GUI.Utility;
 
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;

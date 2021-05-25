@@ -6,22 +6,39 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class MainWindow extends JFrame {
-    private final int textFieldWidth = 200;
-    private final int textFieldHeight = 20;
+    private final int textFieldWidth = 300;
+    private final int textFieldHeight = 25;
+
+    private static final String windowName = "Главное меню";
+    private static final String manageDatabaseLabelText = "";
+    private static final String manageShopButtonText = "Управление магазином";
+    private static final String manageUsersButtonText = "Управление пользователями";
+    private static final String manageDatabaseButtonText = "Администрирование базы данных";
+    private static final String disconnectButtonText = "Отключить текущее соединение";
+    private static final String exitButtonText = "Выход из приложения";
+
+    private JButton helpButton;
+    private static final String helpButtonText = "Помощь";
+    private static final String helpText = "Это главное меню.\n" +
+            "Для работы с магазином нажмите \"Управление магазином\",\n" +
+            "В управлении магазином осуществляются все действия, связанные с бизнес логикой.\n" +
+            "Для добавления и удаления работников магазина нажмите \"Управление сотрудниками\".\n" +
+            "Для ручного управления базой данных нажмите \"Администрирование базы данных\" (это админ панель).\n";
 
     private ApplicationManager applicationManager;
 
+    private JButton manageShopButton;
+    private JButton manageUsersButton;
     private JButton manageDatabaseButton;
-    private JButton manualModeButton;
 
-    private JButton initButton;
-    private JButton fillButton;
-    private JButton dropButton;
+    private JButton disconnectButton;
+    private JButton exitButton;
 
     public MainWindow(ApplicationManager applicationManager) {
-        super("Main window");
+        super(windowName);
         this.setSize(1024, 768);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
@@ -30,72 +47,103 @@ public class MainWindow extends JFrame {
 
         this.applicationManager = applicationManager;
 
+        JLabel manageDatabaseLabel = new JLabel(manageDatabaseLabelText);
+        manageDatabaseLabel.setBorder(BorderFactory.createEmptyBorder(240, 0, 0, 0));
+        manageDatabaseLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        manageShopButton = new JButton();
+        manageShopButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        manageShopButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
+        manageShopButton.setText(manageShopButtonText);
+        manageShopButton.addActionListener(new ShopManagementActionListener());
+
+        manageUsersButton = new JButton();
+        manageUsersButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        manageUsersButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
+        manageUsersButton.setText(manageUsersButtonText);
+        manageUsersButton.addActionListener(new ManageUsersActionListener());
+
         manageDatabaseButton = new JButton();
         manageDatabaseButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         manageDatabaseButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
-        manageDatabaseButton.setText("Manage database");
-        manageDatabaseButton.addActionListener(new ManageTableActionListener());
+        manageDatabaseButton.setText(manageDatabaseButtonText);
+        manageDatabaseButton.addActionListener(new ManageDatabaseActionListener());
 
-        manualModeButton = new JButton();
-        manualModeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        manualModeButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
-        manualModeButton.setText("Manual mode");
-        manualModeButton.addActionListener(new ManualModeActionListener());
+        disconnectButton = new JButton();
+        disconnectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        disconnectButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
+        disconnectButton.setText(disconnectButtonText);
+        disconnectButton.addActionListener(new DisconnectActionListener());
 
-        initButton = new JButton();
-        initButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        initButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
-        initButton.setText("Init Database");
-        initButton.addActionListener(new InitActionListener());
+        exitButton = new JButton();
+        exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        exitButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
+        exitButton.setText(exitButtonText);
+        exitButton.addActionListener(new ExitActionListener());
 
-        fillButton = new JButton();
-        fillButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        fillButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
-        fillButton.setText("Add test data to Database");
-        fillButton.addActionListener(new FillActionListener());
-
-        dropButton = new JButton();
-        dropButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        dropButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
-        dropButton.setText("Drop Database");
-        dropButton.addActionListener(new DropActionListener());
+        helpButton = new JButton();
+        helpButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        helpButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
+        helpButton.setText(helpButtonText);
+        helpButton.addActionListener(new HelpListener());
 
         this.getContentPane().setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
 
+        this.getContentPane().add(manageDatabaseLabel);
+        this.getContentPane().add(manageShopButton);
+        this.getContentPane().add(manageUsersButton);
         this.getContentPane().add(manageDatabaseButton);
-        this.getContentPane().add(manualModeButton);
-        this.getContentPane().add(initButton);
-        this.getContentPane().add(fillButton);
-        this.getContentPane().add(dropButton);
+
+        this.getContentPane().add(new JLabel(" "));
+        this.getContentPane().add(disconnectButton);
+        this.getContentPane().add(exitButton);
+        this.getContentPane().add(new JLabel(" "));
+        this.getContentPane().add(helpButton);
     }
 
-    class ManageTableActionListener implements ActionListener {
+    public void showAndHideButtons() {
+        manageUsersButton.setEnabled(applicationManager.getUserRolesList().contains("SHOP_DIRECTOR") &&
+                applicationManager.getUserRolesList().contains("SHOP_ADMIN"));
+        manageDatabaseButton.setEnabled(applicationManager.getUserRolesList().contains("SHOP_ADMIN"));
+    }
+
+    class ShopManagementActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            applicationManager.showTableManageWindow();
+            applicationManager.showShopManagementWindow();
         }
     }
 
-    class ManualModeActionListener implements ActionListener {
+    class ManageDatabaseActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            applicationManager.showManualModeWindow();
+            applicationManager.showDatabaseManagementWindow();
         }
     }
 
-    class InitActionListener implements ActionListener {
+    class ManageUsersActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            applicationManager.initDatabase();
+            applicationManager.showUsersManagementWindow();
         }
     }
 
-    class FillActionListener implements ActionListener {
+    class DisconnectActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            applicationManager.fillDatabase();
+            try {
+                applicationManager.logout();
+            } catch (SQLException exception) {
+                exception.printStackTrace();
+            }
         }
     }
 
-    class DropActionListener implements ActionListener {
+    class ExitActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            applicationManager.dropTables();
+            System.exit(0);
+        }
+    }
+
+    class HelpListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            JOptionPane.showMessageDialog(null, helpText);
         }
     }
 }

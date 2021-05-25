@@ -1,27 +1,24 @@
-package GUI;
+package GUI.MainMenu;
 
 import ApplicationManager.ApplicationManager;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
-public class TableManageWindow extends JFrame {
+public class UsersManagementWindow extends JFrame {
 
-    private static final String windowName = "Просмотр и редактирование таблиц";
+    private static final String windowName = "Управление пользователями";
     private static final String backButtonText = "Назад";
     private static final String updateButtonText = "Обновить";
-    private static final String addRowButtonText = "Добавить запись";
-    private static final String deleteRowButtonText = "Удалить запись";
-    private static final String overrideRowButtonText = "Перезаписать запись";
-    private static final String saveChangesButtonText = "Сохранить изменения";
-    private static final String discardButtonText = "Отменить изменения";
+    private static final String addRowButtonText = "Добавить пользователя";
+    private static final String deleteRowButtonText = "Удалить пользователя";
     private static final String firstRowButtonText = "Первая запись";
     private static final String lastRowButtonText = "Последняя запись";
     private static final String prevRowButtonText = "Предыдущая запись";
@@ -38,9 +35,6 @@ public class TableManageWindow extends JFrame {
 
     private JButton addRowButton;
     private JButton deleteRowButton;
-    private JButton overrideRowButton;
-    private JButton saveChangesButton;
-    private JButton discardButton;
 
     private JButton firstRowButton;
     private JButton lastRowButton;
@@ -57,9 +51,9 @@ public class TableManageWindow extends JFrame {
     private JComboBox comboBox;
 
     private int selectedRowIndex = 0;
-    private String currentTableName;
+    private String currentRoleName;
 
-    public TableManageWindow(ApplicationManager applicationManager) {
+    public UsersManagementWindow(ApplicationManager applicationManager) {
         super(windowName);
         this.setSize(1024, 768);
         this.setLocationRelativeTo(null);
@@ -104,19 +98,10 @@ public class TableManageWindow extends JFrame {
         updateDatabaseButton.addActionListener(new UpdateActionListener());
 
         addRowButton = new JButton(addRowButtonText);
-        addRowButton.addActionListener(new AddRowActionListener());
+        addRowButton.addActionListener(new AddUserListener());
 
         deleteRowButton = new JButton(deleteRowButtonText);
-        deleteRowButton.addActionListener(new DeleteRowActionListener());
-
-        overrideRowButton = new JButton(overrideRowButtonText);
-        overrideRowButton.addActionListener(new OverrideRowActionListener());
-
-        saveChangesButton = new JButton(saveChangesButtonText);
-        saveChangesButton.addActionListener(new SaveChangesActionListener());
-
-        discardButton = new JButton(discardButtonText);
-        discardButton.addActionListener(new DiscardActionListener());
+        deleteRowButton.addActionListener(new DeleteUserListener());
 
         firstRowButton = new JButton(firstRowButtonText);
         firstRowButton.addActionListener(new FirstRowActionListener());
@@ -143,15 +128,15 @@ public class TableManageWindow extends JFrame {
     }
 
     public void loadDataToTable() {
-        comboBox.setModel(applicationManager.getAllTables());
-        currentTableName = comboBox.getModel().getElementAt(0).toString();
+        comboBox.setModel(applicationManager.getAllRoles());
+        currentRoleName = comboBox.getModel().getElementAt(0).toString();
         updateTableModule();
     }
 
     class BackButtonActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            applicationManager.showDatabaseManagementWindow();
+            applicationManager.showMainWindow();
         }
     }
 
@@ -198,103 +183,30 @@ public class TableManageWindow extends JFrame {
         }
     }
 
-    class AddRowActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Vector<String> cols = new Vector<>();
-            Vector<String> values = new Vector<>();
-            for (int i = 0; i != tableDataTextFields.size(); i++) {
-                cols.add(tableDataLabels.get(i).getText());
-                values.add(tableDataTextFields.get(i).getText());
-            }
-
-            try {
-                applicationManager.oracleAddRow(currentTableName, cols, values);
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-
-            updateTableModule();
-        }
-    }
-
-    class DeleteRowActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Vector<String> cols = new Vector<>();
-            Vector<String> values = new Vector<>();
-            for (int i = 0; i != tableDataTextFields.size(); i++) {
-                cols.add(tableDataLabels.get(i).getText());
-                values.add(tableDataTextFields.get(i).getText());
-            }
-
-            try {
-                applicationManager.oracleDeleteRow(currentTableName, cols, values);
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-
-            updateTableModule();
-        }
-    }
-
-    class OverrideRowActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Vector<String> cols = new Vector<>();
-            Vector<String> oldValues = new Vector<>();
-            Vector<String> newValues = new Vector<>();
-            for (int i = 0; i != tableDataTextFields.size(); i++) {
-                cols.add(tableDataLabels.get(i).getText());
-                newValues.add(tableDataTextFields.get(i).getText());
-            }
-
-            for (int i = 0; i != table.getModel().getColumnCount(); i++) {
-                oldValues.add(table.getModel().getValueAt(selectedRowIndex, i).toString());
-            }
-
-            try {
-                applicationManager.oracleOverrideRow(currentTableName, cols, oldValues, newValues);
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-
-            updateTableModule();
-        }
-    }
-
-    class SaveChangesActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-                applicationManager.oracleCommit();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        }
-    }
-
-    class DiscardActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-                applicationManager.oracleRollback();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        }
-    }
-
     class ItemChangeListener implements ItemListener {
         @Override
         public void itemStateChanged(ItemEvent event) {
             if (event.getStateChange() == ItemEvent.SELECTED) {
                 Object item = event.getItem();
-                currentTableName = item.toString();
+                currentRoleName = item.toString();
                 updateTableModule();
                 loadTableDataToFields();
                 repaint();
             }
+        }
+    }
+
+    class AddUserListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            new AddUserOptionPane();
+        }
+    }
+
+    class DeleteUserListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            new DeleteUserOptionPane();
         }
     }
 
@@ -322,7 +234,7 @@ public class TableManageWindow extends JFrame {
     private void updateTableModule() {
         DefaultTableModel tableModel;
         try {
-            tableModel = applicationManager.getTableByName(currentTableName);
+            tableModel = applicationManager.getUsersByRole(currentRoleName);
             table.setModel(tableModel);
 
             tableDataLabels.clear();
@@ -363,12 +275,58 @@ public class TableManageWindow extends JFrame {
 
         tableManagePanel.add(addRowButton);
         tableManagePanel.add(deleteRowButton);
-        tableManagePanel.add(overrideRowButton);
-        tableManagePanel.add(saveChangesButton);
-        tableManagePanel.add(discardButton);
 
         managePanel.add(tableManagePanel);
 
         loadTableDataToFields();
+    }
+
+    public class AddUserOptionPane {
+        JPanel fields = new JPanel(new GridLayout(6, 1));
+        JLabel loginLabel = new JLabel("Введите логин: ");
+        JTextField loginField = new JTextField(10);
+        JLabel passwordLabel = new JLabel("Введите пароль: ");
+        JTextField passwordField = new JTextField(10);
+        JLabel selectRoleLabel = new JLabel("Выберите роль: ");
+
+        AddUserOptionPane() {
+            fields.add(loginLabel);
+            fields.add(loginField);
+            fields.add(passwordLabel);
+            fields.add(passwordField);
+            fields.add(selectRoleLabel);
+            fields.add(comboBox);
+
+            int result = JOptionPane.showConfirmDialog(null, fields, "Создание пользователя", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            try {
+                applicationManager.createUser(loginField.getText(), passwordField.getText(), currentRoleName);
+            } catch (SQLException exception) {
+                JOptionPane.showMessageDialog(null, "Ошибка!\n" + exception.getMessage());
+                return;
+            }
+
+            JOptionPane.showMessageDialog(null, "Выполнено");
+        }
+    }
+
+    public class DeleteUserOptionPane {
+        JPanel fields = new JPanel(new GridLayout(6, 1));
+        JLabel loginLabel = new JLabel("Введите логин: ");
+        JTextField loginField = new JTextField(10);
+
+        DeleteUserOptionPane() {
+            fields.add(loginLabel);
+            fields.add(loginField);
+
+            int result = JOptionPane.showConfirmDialog(null, fields, "Создание пользователя", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            try {
+                applicationManager.dropUser(loginField.getText());
+            } catch (SQLException exception) {
+                JOptionPane.showMessageDialog(null, "Ошибка!\n" + exception.getMessage());
+                return;
+            }
+
+            JOptionPane.showMessageDialog(null, "Выполнено");
+        }
     }
 }

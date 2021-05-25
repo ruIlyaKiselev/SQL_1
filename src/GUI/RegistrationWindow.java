@@ -8,23 +8,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
-public class LoginWindow extends JFrame {
+public class RegistrationWindow extends JFrame {
 
     private final int textFieldWidth = 300;
     private final int textFieldHeight = 25;
 
-    private static final String windowName = "Подключение к базе данных";
+    private static final String windowName = "Регистрация в базе данных";
     private static final String connectionURLLabelText = "URL для подключения:";
     private static final String connectionURLTextFieldText = "jdbc:oracle:thin:@//localhost:1521/XEPDB1";
     // jdbc:oracle:thin:@84.237.50.81:1521:xe
     // jdbc:oracle:thin:@//localhost:1521/XEPDB1
     private static final String loginLabelText = "Логин: ";
     private static final String passwordLabelText = "Пароль: ";
-    private static final String connectButtonText = "Войти";
-    private static final String registrationButtonText = "Регистрация";
-
-    private static final String loginTextFieldText = "shop"; // database hardcoded login
-    private static final String passwordTextFieldText = "admin"; // database hardcoded password
+    private static final String passwordLabelText2 = "Подтвердите пароль: ";
+    private static final String registrationButtonText = "Зарегистрировать";
+    private static final String backButtonText = "Назад";
 
     private JButton helpButton;
     private static final String helpButtonText = "Помощь";
@@ -40,17 +38,19 @@ public class LoginWindow extends JFrame {
     private String connectionURL;
     private String username;
     private String password;
+    private String password2;
 
     private JTextField  connectionURLTextField;
     private JTextField  loginTextField;
     private JPasswordField  passwordTextField;
+    private JPasswordField  passwordTextField2;
     private JLabel buttonLabel;
 
-    private JButton connectButton;
     private JButton registrationButton;
+    private JButton backButton;
 
 
-    public LoginWindow(ApplicationManager applicationManager) {
+    public RegistrationWindow(ApplicationManager applicationManager) {
         super(windowName);
         this.setSize(1024, 768);
         this.setLocationRelativeTo(null);
@@ -75,7 +75,6 @@ public class LoginWindow extends JFrame {
         loginTextField = new JTextField(16);
         loginTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginTextField.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
-        loginTextField.setText(loginTextFieldText);
 
         JLabel passwordLabel = new JLabel(passwordLabelText);
         passwordLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -84,22 +83,29 @@ public class LoginWindow extends JFrame {
         passwordTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
         passwordTextField.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
         passwordTextField.setEchoChar('*');
-        passwordTextField.setText(passwordTextFieldText);
+
+        JLabel passwordLabel2 = new JLabel(passwordLabelText2);
+        passwordLabel2.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        passwordTextField2 = new JPasswordField(16);
+        passwordTextField2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        passwordTextField2.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
+        passwordTextField2.setEchoChar('*');
 
         buttonLabel = new JLabel("~");
         buttonLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        connectButton = new JButton();
-        connectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        connectButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
-        connectButton.setText(connectButtonText);
-        connectButton.addActionListener(new ConnectListener());
 
         registrationButton = new JButton();
         registrationButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         registrationButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
         registrationButton.setText(registrationButtonText);
         registrationButton.addActionListener(new RegistrationListener());
+
+        backButton = new JButton();
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backButton.setMaximumSize(new Dimension(textFieldWidth, textFieldHeight));
+        backButton.setText(backButtonText);
+        backButton.addActionListener(new BackListener());
 
         helpButton = new JButton();
         helpButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -115,31 +121,40 @@ public class LoginWindow extends JFrame {
         this.getContentPane().add(loginTextField);
         this.getContentPane().add(passwordLabel);
         this.getContentPane().add(passwordTextField);
+        this.getContentPane().add(passwordLabel2);
+        this.getContentPane().add(passwordTextField2);
         this.getContentPane().add(buttonLabel);
-        this.getContentPane().add(connectButton);
         this.getContentPane().add(registrationButton);
+        this.getContentPane().add(new JLabel(" "));
+        this.getContentPane().add(backButton);
         this.getContentPane().add(new JLabel(" "));
         this.getContentPane().add(helpButton);
     }
 
-    class ConnectListener implements ActionListener {
+    class RegistrationListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             connectionURL = connectionURLTextField.getText();
             username = loginTextField.getText();
             password = new String(passwordTextField.getPassword());
+            password2 = new String(passwordTextField2.getPassword());
 
-            try {
-                applicationManager.login(connectionURL, username, password);
-            } catch (SQLException throwables) {
-                buttonLabel.setText(throwables.getMessage());
-                System.err.println(throwables.getMessage());
+            if (password.equals(password2)) {
+                try {
+                    applicationManager.login(connectionURL, username, password);
+                } catch (SQLException throwables) {
+                    buttonLabel.setText(throwables.getMessage());
+                    System.err.println(throwables.getMessage());
+                }
+            } else {
+                buttonLabel.setText("Пароли не совпадают");
+                System.err.println("Пароли не совпадают");
             }
         }
     }
 
-    class RegistrationListener implements ActionListener {
+    class BackListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            applicationManager.showRegistrationWindow();
+            applicationManager.showLoginWindow();
         }
     }
 

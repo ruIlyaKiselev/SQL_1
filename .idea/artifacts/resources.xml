@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact name="resources">
+    <output-path>$PROJECT_DIR$/out/artifacts/resources</output-path>
+    <root id="root">
+      <element id="module-output" name="SQL_1" />
+      <element id="dir-copy" path="$PROJECT_DIR$/resources" />
+      <element id="library" level="project" name="ojdbc8" />
+    </root>
+  </artifact>
+</component>
